@@ -15,8 +15,8 @@
 
         body {
             font-family: sans-serif;
-            background-color: #f4fbff;
-            color: #1e2c3b;
+            background-color: #768994;
+            color: #070707;
             padding: 24px;
         }
 
@@ -24,6 +24,7 @@
             font-size: 1.6rem;
             color: #063e5f;
             margin-bottom: 1rem;
+            text-align: center;
         }
 
         .contaniner {
@@ -39,12 +40,107 @@
             margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
+
+        .form-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+
+        }
+
+        .form-row label {
+            width: 90px;
+            color: #063e5f;
+            font-weight: bold;
+        }
+
+        input[type="number"],
+        select {
+            padding: 8px 10px;
+            border: 1px solid #b0d4ee;
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 180px;
+
+        }
+
+        #clacBtn {
+            font-size: 1.2rem;
+            padding: 12px;
+            margin-top: 20px;
+            text-align: center;
+            justify-content: center;
+            width: 100%;
+            color: white;
+            background-color: #1707a8;
+            border-radius: 6px;
+            border: none;
+            transition: background-color 1.0s;
+        }
+
+        #clacBtn:hover {
+            background-color: #8c0aa7c4;
+        }
+
+        input[type="radia"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #1707a8;
+        }
+
+        .summary-tabel,
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        .summary-tabel th {
+            background-color: #2589c9;
+            color: #ffff;
+        }
+
+        .summary-tabel th,
+        .summary-tabel td {
+            border: 1px solid #838e94;
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .detail-table th {
+            background-color: #0c0c24af;
+            color: #ffff;
+        }
+
+        .detail-table th,
+        .detail-table td {
+            border: 1px solid #838e94;
+            padding: 10px 10px;
+            text-align: center;
+        }
+
+        .detail-table tr:nth-child(even) {
+            background-color: #bcbec0;
+        }
+
+        .summary-tabel td:first-child {
+            background-color: cornflowerblue;
+        }
+
+        .subtitle {
+            font: 0.5rem;
+            color: #434d55;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 
 <body>
     <div class="contaniner">
-        <h1>貸款試算APP V0.1</h1>
+        <h1>貸款精算助手 <span class="subtitle"> 分析還款計畫</span></h1>
 
         <hr>
         <form id="loanForm" action="" class="loan-form">
@@ -82,11 +178,12 @@
             <button type="submit" id="clacBtn">計算</button>
 
         </form>
+        <h2>試算結果</h2>
         <div class="result">
-            <h2>試算結果</h2>
+
 
             <!-- 摘要表格 -->
-            <table border="1">
+            <table class="summary-tabel">
                 <thead>
                     <tr>
                         <th>項目</th>
@@ -110,7 +207,7 @@
             </table>
 
             <!-- 分期明細表格 -->
-            <table border="1">
+            <table border="1" class="detail-table">
                 <thead>
                     <tr>
                         <th>期數</th>
@@ -118,6 +215,27 @@
                         <th>本金</th>
                         <th>利息</th>
                         <th>剩餘本金</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>100000</td>
+                        <td>10000000</td>
+                        <td>58960</td>
+                        <td>12300000</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>100000</td>
+                        <td>10000000</td>
+                        <td>58960</td>
+                        <td>12300000</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>100000</td>
+                        <td>10000000</td>
+                        <td>58960</td>
+                        <td>12300000</td>
                     </tr>
                 </thead>
                 <tbody id="scheduleBody">
