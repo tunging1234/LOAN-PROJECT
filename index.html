@@ -168,8 +168,8 @@
             </div>
             <div class="form-row">
                 <label for="repayment">還款方式</label>
-                <input type="radio" id="repayment1" name="repayment" value="repaymentMethod1" checked>本息平均攤還
-                <input type="radio" id="repayment2" name="repayment" value="repaymentMethod2">本金平均攤還
+                <input type="radio" id="repayment1" name="repayment" value="repaymentMethod1" checked>本金平均攤還
+                <input type="radio" id="repayment2" name="repayment" value="repaymentMethod2">本息平均攤還
             </div>
             <button type="button" id="clacBtn">計算</button>
 
@@ -212,27 +212,6 @@
                         <th>利息</th>
                         <th>剩餘本金</th>
                     </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>100000</td>
-                        <td>10000000</td>
-                        <td>58960</td>
-                        <td>12300000</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>100000</td>
-                        <td>10000000</td>
-                        <td>58960</td>
-                        <td>12300000</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>100000</td>
-                        <td>10000000</td>
-                        <td>58960</td>
-                        <td>12300000</td>
-                    </tr>
                 </thead>
                 <tbody id="scheduleBody">
                     <!-- JavaScript 動態填入 -->
@@ -266,9 +245,66 @@
                 "input[name='repayment']:checked"
             ).value;
             console.log(amount, rate, loanYears, method);
+
+            let schedules = repaymentMethod1(amount * 10000, rate, loanYears);
+            renderTable(schedules);
+
         });
 
+        function repaymentMethod1(amount, rate, years) {
+            let monthRate = rate / 100 / 12; //月利率
+            let months = years * 12; //總期數
+            let monthlyPayment = Math.round(amount / months); //攤還本金
+            console.log(monthRate, months, monthlyPayment);
 
+            schedules = [];
+
+            for (let i = 0; i < months; i++) {
+                let interest = Math.round(amount * monthRate);
+                amount -= monthlyPayment;
+
+                //最後一期
+                if (i == months - 1) {
+                    monthlyPayment += amount;
+                    amount = 0;
+                }
+
+                console.log(` ${i + 1} 本金:${monthlyPayment} 利息:${interest} 剩餘金額${amount}`);
+
+
+
+                schedules.push(
+                    {
+                        "month": i + 1,
+                        "monthlyPayment": monthlyPayment,
+                        "interest": interest,
+                        "amount": amount
+                    }
+
+                );
+            }
+            console.log(schedules);
+            return schedules;
+        }
+
+        function renderTable(schedules) {
+            let tableHtml = "";
+
+            for (let i = 0; i < schedules.length; i++) {
+                tableHtml += `
+                    <tr>
+                        <td> ${schedules[i].month}</td>
+                        <td> ${schedules[i].monthlyPayment + schedules[i].interest}</td>
+                        <td> ${schedules[i].monthlyPayment}</td>
+                        <td> ${schedules[i].interest}</td>
+                        <td> ${schedules[i].amount}</td>
+                    </tr>
+                `;
+            }
+            console.log(tableHtml);
+            document.querySelector("#scheduleBody").innerHTML = tableHtml;
+
+        }
 
     </script>
 
