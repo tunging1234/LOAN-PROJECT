@@ -189,7 +189,9 @@
                 <tbody>
                     <tr>
                         <td>每月還款金額</td>
-                        <td id="monthlyPayment">--</td>
+                        <td id="monthlyPayment">
+                            
+                        </td>
                     </tr>
                     <tr>
                         <td>總還款金額</td>
@@ -249,12 +251,20 @@
             let schedules = repaymentMethod1(amount * 10000, rate, loanYears);
             renderTable(schedules);
 
+            document.querySelector("#monthlyPayment").textContent = `${schedules[0].monthSumAmount}`;
+            document.querySelector("#totalInterest").textContent = `${schedules[0].sumInterest}`;
+            //alert(schedules[0].monthlyPayment + schedules[0].interest);
+
+
         });
 
         function repaymentMethod1(amount, rate, years) {
             let monthRate = rate / 100 / 12; //月利率
             let months = years * 12; //總期數
             let monthlyPayment = Math.round(amount / months); //攤還本金
+            let monthSumAmount = 0; //每月還款金額
+            let sumAmout = 0; //總還款金額
+            let sumInterest = 0; //總利息支出
             console.log(monthRate, months, monthlyPayment);
 
             schedules = [];
@@ -269,6 +279,12 @@
                     amount = 0;
                 }
 
+                if(i == 0){
+                    monthSumAmount = monthlyPayment + interest;
+                }
+
+                sumInterest += interest;
+
                 console.log(` ${i + 1} 本金:${monthlyPayment} 利息:${interest} 剩餘金額${amount}`);
 
 
@@ -278,7 +294,9 @@
                         "month": i + 1,
                         "monthlyPayment": monthlyPayment,
                         "interest": interest,
-                        "amount": amount
+                        "amount": amount,
+                        "monthSumAmount":monthSumAmount,
+                        "sumInterest":sumInterest
                     }
 
                 );
