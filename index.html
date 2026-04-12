@@ -5,137 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>貸款試算APP V0.1</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: sans-serif;
-            background-color: #768994;
-            color: #070707;
-            padding: 24px;
-        }
-
-        h1 {
-            font-size: 1.6rem;
-            color: #063e5f;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .contaniner {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .loan-form,
-        .result {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        }
-
-        .form-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-
-        }
-
-        .form-row label {
-            width: 90px;
-            color: #063e5f;
-            font-weight: bold;
-        }
-
-        input[type="number"],
-        select {
-            padding: 8px 10px;
-            border: 1px solid #b0d4ee;
-            border-radius: 6px;
-            font-size: 1rem;
-            width: 180px;
-
-        }
-
-        #clacBtn {
-            font-size: 1.2rem;
-            padding: 12px;
-            margin-top: 20px;
-            text-align: center;
-            justify-content: center;
-            width: 100%;
-            color: white;
-            background-color: #1707a8;
-            border-radius: 6px;
-            border: none;
-            transition: background-color 1.0s;
-        }
-
-        #clacBtn:hover {
-            background-color: #8c0aa7c4;
-        }
-
-        input[type="radia"] {
-            width: 16px;
-            height: 16px;
-            accent-color: #1707a8;
-        }
-
-        .summary-tabel,
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 24px;
-        }
-
-        .summary-tabel th {
-            background-color: #2589c9;
-            color: #ffff;
-        }
-
-        .summary-tabel th,
-        .summary-tabel td {
-            border: 1px solid #838e94;
-            padding: 10px 12px;
-            text-align: left;
-        }
-
-        .detail-table th {
-            background-color: #0c0c24af;
-            color: #ffff;
-        }
-
-        .detail-table th,
-        .detail-table td {
-            border: 1px solid #838e94;
-            padding: 10px 10px;
-            text-align: center;
-        }
-
-        .detail-table tr:nth-child(even) {
-            background-color: #bcbec0;
-        }
-
-        .summary-tabel td:first-child {
-            background-color: cornflowerblue;
-        }
-
-        .subtitle {
-            font: 0.5rem;
-            color: #434d55;
-            font-weight: 400;
-            letter-spacing: 1px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/utils.js"></script>
 </head>
 
 <body>
@@ -174,7 +45,8 @@
             <button type="button" id="clacBtn">計算</button>
 
         </form>
-        <h2>試算結果</h2>
+        <h2>試算結果 <button type="button" id="exportBtn">輸出CSV</button></h2>
+
         <div class="result">
 
 
@@ -190,7 +62,7 @@
                     <tr>
                         <td>每月還款金額</td>
                         <td id="monthlyPayment">
-                            
+
                         </td>
                     </tr>
                     <tr>
@@ -205,20 +77,22 @@
             </table>
 
             <!-- 分期明細表格 -->
-            <table border="1" class="detail-table">
-                <thead>
-                    <tr>
-                        <th>期數</th>
-                        <th>月付金額</th>
-                        <th>本金</th>
-                        <th>利息</th>
-                        <th>剩餘本金</th>
-                    </tr>
-                </thead>
-                <tbody id="scheduleBody">
-                    <!-- JavaScript 動態填入 -->
-                </tbody>
-            </table>
+            <div id="table-scroll">
+                <table border="1" class="detail-table">
+                    <thead>
+                        <tr>
+                            <th>期數</th>
+                            <th>月付金額</th>
+                            <th>本金</th>
+                            <th>利息</th>
+                            <th>剩餘本金</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleBody">
+                        <!-- JavaScript 動態填入 -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -227,15 +101,43 @@
         console.log(title);
         title.style.color = "orange";
 
-        //修改內容
-        title.innerText = "超級助手!";
-        title.innerHTML = "<b>超級助手</b>";
-
         const amountEl = document.querySelector("#amount");
         const rateEl = document.querySelector("#rate");
         const loanYearsEl = document.querySelector("#loanYears");
         const clacBtnEl = document.querySelector("#clacBtn");
+        const exportBtnEl = document.querySelector("#exportBtn");
 
+        let schedules = [];
+
+        console.log(exportBtnEl);
+
+        exportBtnEl.addEventListener("click", function (e) {
+            console.log(schedules);
+
+            if (schedules.length == 0) {
+                alert("目前無資料，請先計算");
+                return;
+            }
+
+            let data = [];
+            const headers = ["期數", "月付金額", "本金", "利息", "剩餘本金"];
+            for (let i = 0; i < schedules.length; i++) {
+                data.push(
+                    [
+                        schedules[i].month,
+                        schedules[i].monthlyPayment + schedules[i].interest,
+                        schedules[i].monthlyPayment,
+                        schedules[i].interest,
+                        schedules[i].amount
+                    ]
+                );
+            }
+
+            console.log(data);
+
+            downloadCSV(headers, data);
+
+        });
 
         clacBtn.addEventListener("click", function (e) {
             let amount = amountEl.value;
@@ -248,11 +150,12 @@
             ).value;
             console.log(amount, rate, loanYears, method);
 
-            let schedules = repaymentMethod1(amount * 10000, rate, loanYears);
+            schedules = repaymentMethod1(amount * 10000, rate, loanYears);
             renderTable(schedules);
 
-            document.querySelector("#monthlyPayment").textContent = `${schedules[0].monthSumAmount}`;
-            document.querySelector("#totalInterest").textContent = `${schedules[0].sumInterest}`;
+            renderSummary(schedules);
+            //document.querySelector("#monthlyPayment").textContent = `${schedules[0].monthSumAmount}`;
+            //document.querySelector("#totalInterest").textContent = `${schedules[0].sumInterest}`;
             //alert(schedules[0].monthlyPayment + schedules[0].interest);
 
 
@@ -279,7 +182,7 @@
                     amount = 0;
                 }
 
-                if(i == 0){
+                if (i == 0) {
                     monthSumAmount = monthlyPayment + interest;
                 }
 
@@ -295,8 +198,8 @@
                         "monthlyPayment": monthlyPayment,
                         "interest": interest,
                         "amount": amount,
-                        "monthSumAmount":monthSumAmount,
-                        "sumInterest":sumInterest
+                        "monthSumAmount": monthSumAmount,
+                        "sumInterest": sumInterest
                     }
 
                 );
@@ -322,6 +225,25 @@
             console.log(tableHtml);
             document.querySelector("#scheduleBody").innerHTML = tableHtml;
 
+
+        }
+
+        function renderSummary(schedules) {
+            const monthlyPaymentEl = document.querySelector("#monthlyPayment");
+            const totalPaymentEl = document.querySelector("#totalPayment");
+            const totalInterestEl = document.querySelector("#totalInterest");
+
+            console.log(monthlyPaymentEl, totalPaymentEl, totalInterestEl);
+
+            monthlyPaymentEl.innerHTML = `${schedules[0].monthlyPayment}`;
+
+            let totalPayment = 0, totalInterest = 0;
+            for (let i = 0; i < schedules.length; i++) {
+                totalInterest += schedules[i].interest;
+                totalPayment += schedules[i].monthlyPayment;
+            }
+            totalPaymentEl.innerHTML = `${totalPayment + totalInterest}`;
+            totalInterestEl.innerHTML = `${totalInterest}`;
         }
 
     </script>
